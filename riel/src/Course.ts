@@ -17,7 +17,7 @@ export class Course {
 	private name: string;
 	private description: string;
 	private duration: number;
-	private prereq: CourseList = new CourseList();
+	private prereq: CourseList;
 	private referenceCount: number;
 
 	// This constructor for course takes a name, description,
@@ -28,6 +28,7 @@ export class Course {
 		this.name = name;
 		this.description = description;
 		this.duration = duration;
+		this.prereq = new CourseList(courses.length);
 		for (let course of courses) {
 			this.prereq.addItem(course);
 		}
@@ -136,13 +137,32 @@ export class CourseList {
 		newItem.attachObject();
 		return 1;
 	}
-	findItem(name: string): Course {
-		throw new Error("Method not implemented.");
+
+	// The course list searches its list for the course whose
+	// name matches that passed in by the user. If the course
+	// isn't found, this method returns the NULL pointer.
+	findItem(name: string): Course | null {
+		return this.courses.find(x => x.areYou(name));
 	}
-	findAll(list: CourseList): number {
-		throw new Error("Method not implemented.");
+	// This method checks to be sure that all courses of the
+	// findlist are in the list to which the message was sent.
+	// Since courses are shallow copied in these lists, we need
+	// only check the addresses of the course objects and not
+	// the course names.
+	findAll(findList: CourseList): number {
+		for (let course of findList.courses) {
+			if (!this.courses.find(x => x == course)) {
+				return 0;
+			}
+		}
+		return 1;
 	}
+
 	print(): void {
-		throw new Error("Method not implemented.");
+		console.log("\n\n");
+		for (let course of this.courses) {
+			course.shortPrint();
+		}
+		console.log("\n\n");
 	}
 }
